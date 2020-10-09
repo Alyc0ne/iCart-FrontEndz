@@ -1,67 +1,105 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="isDialogGoods" persistent max-width="850px">
+    <v-dialog v-model="isDialogGoods" persistent max-width="950px" scrollable>
       <v-card>
+        <v-toolbar flat color="primary" dark>
+          <v-toolbar-title>เพิ่มข้อมูลสินค้า</v-toolbar-title>
+        </v-toolbar>
+        <v-tabs vertical>
+          <v-tab><v-icon left>mdi-account</v-icon>ข้อมูลทั่วไป</v-tab>
+          <v-tab><v-icon left>mdi-lock</v-icon>หน่วยนับ</v-tab>
+          <v-tab disabled><v-icon left>mdi-access-point</v-icon>รูปภาพ</v-tab>
+
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
+                <v-col class="content">
+                  <v-text-field label="รหัสสินค้า" outlined dense placeholder=""></v-text-field>
+                  <v-text-field label="ชื่อสินค้า" outlined dense></v-text-field>
+                  <!-- <v-select :items="items" label="หมวดหมู่สินค้า" outlined dense></v-select> -->
+                  <v-textarea outlined label="รายละเอียดสินค้า" value=""></v-textarea>
+                </v-col>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
+                <v-col class="content">
+                  <v-row align="center" justify="end">
+                    <v-btn text normal color="primary" outlined @click="isDialogUnit = true"><span style="margin-right:10px;">เพิ่มหน่วยนับ</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
+                  </v-row>
+                  <v-simple-table fixed-header height="300px" class="content table-border">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-center">#</th>
+                          <th class="text-left">Barcode</th>
+                          <th class="text-left">รหัสหน่วยนับ</th>
+                          <th class="text-left">ชื่อหน่วยนับ</th>
+                          <th class="text-left">หน่วยนับหลัก</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="item in ListUnit" :key="item.uid">
+                          <td ref="ManageAccept">
+                            <font-awesome-icon :icon="['fas', 'check']" class="pointer c-blue" @click="AcceptUnit()" style="margin-right:10px;"/>
+                            <font-awesome-icon :icon="['fas', 'times']" class="pointer c-red" @click="NotAcceptUnit()"/>
+                          </td>
+                          <td><input type="text" class="transac-input" v-model="item.Barcode"></td>
+                          <td><input type="text" class="transac-input" v-model="item.UnitNo"></td>
+                          <td><input type="text" class="transac-input" v-model="item.UnitName" readonly></td>
+                          <td><v-checkbox v-model="item.IsBaseUnit"></v-checkbox></td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </v-col>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
+                <p>
+                  Fusce a quam. Phasellus nec sem in justo pellentesque facilisis. Nam eget dui. Proin viverra, ligula sit amet ultrices semper, ligula arcu tristique sapien, a accumsan nisi mauris ac eros. In dui magna, posuere eget, vestibulum et, tempor auctor, justo.
+                </p>
+
+                <p class="mb-0">
+                  Cras sagittis. Phasellus nec sem in justo pellentesque facilisis. Proin sapien ipsum, porta a, auctor quis, euismod ut, mi. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nam at tortor in tellus interdum sagittis.
+                </p>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+        </v-tabs>
+      </v-card>
+
+      <!-- <v-card>
         <v-card-title>เพิ่มข้อมูลสินค้า</v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <v-container>
+          <v-container style="margin-left:0px !important;">
             <v-row>
-              <v-tabs color="blue accent-4" left>
+              <v-tabs color="blue accent-4" vertical>
                 <v-tab>ข้อมูลทั่วไป</v-tab>
                 <v-tab>หน่วยนับ</v-tab>
                 <v-tab>รูปภาพ</v-tab>
 
                 <v-row align="center" justify="end" style="margin-right:10px;" :key="2">
                   <v-btn text large color="primary" outlined @click="addUnit()"><span style="margin-right:10px;">เพิ่มหน่วยนับ</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
-                    <!-- <v-btn small color="" >Small Button</v-btn> -->
                 </v-row>
 
                 <v-tab-item :key="1"> 
                   <v-col class="content">
                     <v-text-field label="รหัสสินค้า" outlined dense placeholder=""></v-text-field>
                     <v-text-field label="ชื่อสินค้า" outlined dense></v-text-field>
-                    <!-- <v-select :items="items" label="หมวดหมู่สินค้า" outlined dense></v-select> -->
+                    <v-select :items="items" label="หมวดหมู่สินค้า" outlined dense></v-select>
                     <v-textarea outlined label="รายละเอียดสินค้า" value=""></v-textarea>
                   </v-col>
-                   <!-- <label for="GoodsName" class="col-sm-2 col-form-label text-left">
-                        <span class="req">*</span>
-                      </label>
-                      <div class="col-sm-10">
-                        <input type="text" class="form-control w40vw" id="GoodsNo" disabled>
-                      </div>
-                    </div>
-                    <div class="form-group row">
-                      <label for="GoodsName" class="col-sm-2 col-form-label text-left">
-                        <span class="req">*</span>
-                      </label>
-                      <div class="col-sm-10">
-                        <input type="text" class="form-control w40vw" id="GoodsName">
-                      </div>
-                    </div>
-                    <div class="form-group row">
-                      <label for="CateNo" class="col-sm-2 col-form-label text-left">
-                        <span class="req">*</span>หมวดหมู่
-                      </label>
-                      <div class="col-sm-10 group-picker">
-                        <input type="text" class="form-control w15vw" id="CateNo" disabled>
-                        <input type="text" class="form-control w20vw" id="CateName" disabled>
-                      </div>
-                    </div>
-                    <div class="form-group row">
-                      <label for="GoodsDesc" class="col-sm-2 col-form-label text-left">
-                        <span class="req"></span>
-                      </label>
-                      <div class="col-sm-10">
-                      <textarea class="form-control w40vw" id="GoodsDesc" rows="3"></textarea>
-                      </div>
-                    </div> -->
                 </v-tab-item>
                 <v-tab-item :key="2">
                   <v-col class="content">
-                    <!-- <v-row align="center">
-                      <v-btn text small color="primary" outlined @click="addUnit()"><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
-                    </v-row> -->
                     <v-simple-table fixed-header height="300px" class="content table-border">
                       <template v-slot:default>
                         <thead>
@@ -89,24 +127,6 @@
                     </v-simple-table>
                   </v-col>
                 </v-tab-item>
-                <!-- <v-tab-item v-for="n in 3" :key="n">
-                  <v-container fluid>
-                    <v-row>
-                      <v-col
-                        v-for="i in 6"
-                        :key="i"
-                        cols="12"
-                        md="4"
-                      >
-                        <v-img
-                          :src="`https://picsum.photos/500/300?image=${i * n * 5 + 10}`"
-                          :lazy-src="`https://picsum.photos/10/6?image=${i * n * 5 + 10}`"
-                          aspect-ratio="1"
-                        ></v-img>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-tab-item> -->
               </v-tabs>
             </v-row>
           </v-container>
@@ -123,6 +143,31 @@
             Save
           </v-btn>
         </v-card-actions>
+      </v-card> -->
+    </v-dialog>
+
+    <v-dialog v-model="isDialogUnit" max-width="500px">
+      <v-card>
+        <v-toolbar flat color="primary" dark>
+          <v-toolbar-title>เพิ่มหน่วยนับ</v-toolbar-title>
+        </v-toolbar>
+        <v-card-text>
+          <v-col class="content">
+            <v-text-field label="Barcode" outlined dense placeholder=""></v-text-field>
+            <v-select v-model="ListUnit" item-text="UnitName" item-value="UnitNo" label="หน่วยนับ" return-object single-line></v-select>
+            <!-- <v-select :ListUnit="ListUnit" label="หน่วยนับ" outlined dense></v-select> -->
+            <!-- <v-checkbox v-model="item.IsBaseUnit"></v-checkbox> -->
+          </v-col>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            color="primary"
+            text
+            @click="dialog2 = false"
+          >
+            Close
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
@@ -133,17 +178,38 @@
     props: ['isDialogGoods'],
     data: () => ({
       dialog: false,
-      ListUnit:[],
+      isDialogUnit: false,
+      select: { state: 'Florida', abbr: 'FL' },
+      // items: [
+      //   { state: 'Florida', abbr: 'FL' },
+      //   { state: 'Georgia', abbr: 'GA' },
+      //   { state: 'Nebraska', abbr: 'NE' },
+      //   { state: 'California', abbr: 'CA' },
+      //   { state: 'New York', abbr: 'NY' },
+      // ],
+
+      ListUnit:[
+        {
+          UnitNo: 'UN-001',
+          UnitName: 'กล่อง',
+        },
+        {
+          UnitNo: 'UN-002',
+          UnitName: 'แพค',
+        },
+      ]
     }),
     methods: {
       addUnit: function () {
         var obj = {
+          uid: '',
           Barcode: '123456',
           UnitNo: 'UN-001',
           UnitName: 'กล่อง',
           IsBaseUnit: true
         }
         this.ListUnit.push(obj);
+        console.log(this.$refs)
       },
       close(){
         this.$emit('close');
@@ -177,5 +243,11 @@
   }
   .pointer {
     cursor: pointer;
+  }
+  .c-red {
+    color: red;
+  }
+  .c-blue {
+    color: #1976d2;
   }
 </style>
