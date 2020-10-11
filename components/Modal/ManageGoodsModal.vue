@@ -42,14 +42,14 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="item in ListUnit" :key="item.uid">
+                        <tr v-for="item in ObjGoodsData.ListUnit" :key="item.uid">
                           <td ref="ManageAccept">
-                            <font-awesome-icon :icon="['fas', 'check']" class="pointer c-blue" @click="AcceptUnit()" style="margin-right:10px;"/>
-                            <font-awesome-icon :icon="['fas', 'times']" class="pointer c-red" @click="NotAcceptUnit()"/>
+                            <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditUnit(item.uid)" style="margin-right:10px;"/>
+                            <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="NotAcceptUnit()"/>
                           </td>
-                          <td><input type="text" class="transac-input" v-model="item.Barcode"></td>
-                          <td><input type="text" class="transac-input" v-model="item.UnitNo"></td>
-                          <td><input type="text" class="transac-input" v-model="item.UnitName" readonly></td>
+                          <td><input readonly type="text" class="transac-input" v-model="item.Barcode"></td>
+                          <td><input readonly type="text" class="transac-input" v-model="item.Unit.UnitNo"></td>
+                          <td><input readonly type="text" class="transac-input" v-model="item.Unit.UnitName"></td>
                           <td><v-checkbox v-model="item.IsBaseUnit"></v-checkbox></td>
                         </tr>
                       </tbody>
@@ -74,99 +74,27 @@
           </v-tab-item>
         </v-tabs>
       </v-card>
-
-      <!-- <v-card>
-        <v-card-title>เพิ่มข้อมูลสินค้า</v-card-title>
-        <v-divider></v-divider>
-        <v-card-text>
-          <v-container style="margin-left:0px !important;">
-            <v-row>
-              <v-tabs color="blue accent-4" vertical>
-                <v-tab>ข้อมูลทั่วไป</v-tab>
-                <v-tab>หน่วยนับ</v-tab>
-                <v-tab>รูปภาพ</v-tab>
-
-                <v-row align="center" justify="end" style="margin-right:10px;" :key="2">
-                  <v-btn text large color="primary" outlined @click="addUnit()"><span style="margin-right:10px;">เพิ่มหน่วยนับ</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
-                </v-row>
-
-                <v-tab-item :key="1"> 
-                  <v-col class="content">
-                    <v-text-field label="รหัสสินค้า" outlined dense placeholder=""></v-text-field>
-                    <v-text-field label="ชื่อสินค้า" outlined dense></v-text-field>
-                    <v-select :items="items" label="หมวดหมู่สินค้า" outlined dense></v-select>
-                    <v-textarea outlined label="รายละเอียดสินค้า" value=""></v-textarea>
-                  </v-col>
-                </v-tab-item>
-                <v-tab-item :key="2">
-                  <v-col class="content">
-                    <v-simple-table fixed-header height="300px" class="content table-border">
-                      <template v-slot:default>
-                        <thead>
-                          <tr>
-                            <th class="text-center">#</th>
-                            <th class="text-left">Barcode</th>
-                            <th class="text-left">รหัสหน่วยนับ</th>
-                            <th class="text-left">ชื่อหน่วยนับ</th>
-                            <th class="text-left">หน่วยนับหลัก</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="item in ListUnit" :key="item.uid">
-                            <td>
-                              <font-awesome-icon :icon="['fas', 'check-circle']" class="pointer" @click="Confirme"/>
-                              <font-awesome-icon :icon="['fas', 'trash-alt']" />
-                            </td>
-                            <td><input type="text" class="transac-input" v-model="item.Barcode"></td>
-                            <td><input type="text" class="transac-input" v-model="item.UnitNo"></td>
-                            <td><input type="text" class="transac-input" v-model="item.UnitName" readonly></td>
-                            <td><v-checkbox v-model="item.IsBaseUnit"></v-checkbox></td>
-                          </tr>
-                        </tbody>
-                      </template>
-                    </v-simple-table>
-                  </v-col>
-                </v-tab-item>
-              </v-tabs>
-            </v-row>
-          </v-container>
-          <small>*indicates required field</small>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="close()">Close</v-btn>
-          <v-btn
-            color="blue darken-1"
-            text
-            
-          >
-            Save
-          </v-btn>
-        </v-card-actions>
-      </v-card> -->
     </v-dialog>
 
-    <v-dialog v-model="isDialogUnit" max-width="500px">
+    <v-dialog v-model="isDialogUnit" max-width="500px" ref="modal" persistent>
       <v-card>
         <v-toolbar flat color="primary" dark>
           <v-toolbar-title>เพิ่มหน่วยนับ</v-toolbar-title>
         </v-toolbar>
         <v-card-text>
           <v-col class="content">
-            <v-text-field label="Barcode" outlined dense placeholder=""></v-text-field>
-            <v-select v-model="ListUnit" item-text="UnitName" item-value="UnitNo" label="หน่วยนับ" return-object single-line></v-select>
-            <!-- <v-select :ListUnit="ListUnit" label="หน่วยนับ" outlined dense></v-select> -->
-            <!-- <v-checkbox v-model="item.IsBaseUnit"></v-checkbox> -->
+            <v-form ref="form" v-model="validObjUnit" lazy-validation>
+              <v-text-field v-model="ObjUnitData.Barcode" :rules="BarcodeRules" label="Barcode" outlined dense placeholder=""></v-text-field>
+              <v-select v-model="ObjUnitData.Unit" :items="ListSelectUnit" item-text="UnitName" :rules="[x => !!x || 'กรุณาเลือกหน่วยนับ']" label="หน่วยนับ" dense outlined return-object></v-select>
+              <v-checkbox v-model="ObjUnitData.IsBaseUnit"></v-checkbox>
+            </v-form>
           </v-col>
         </v-card-text>
+        <v-divider></v-divider>
         <v-card-actions>
-          <v-btn
-            color="primary"
-            text
-            @click="dialog2 = false"
-          >
-            Close
-          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="isDialogUnit = false">Close</v-btn>
+          <v-btn color="blue darken-1" text :disabled="!validObjUnit" @click="InsertUnit()">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -179,37 +107,54 @@
     data: () => ({
       dialog: false,
       isDialogUnit: false,
-      select: { state: 'Florida', abbr: 'FL' },
-      // items: [
-      //   { state: 'Florida', abbr: 'FL' },
-      //   { state: 'Georgia', abbr: 'GA' },
-      //   { state: 'Nebraska', abbr: 'NE' },
-      //   { state: 'California', abbr: 'CA' },
-      //   { state: 'New York', abbr: 'NY' },
-      // ],
-
-      ListUnit:[
-        {
-          UnitNo: 'UN-001',
-          UnitName: 'กล่อง',
-        },
-        {
-          UnitNo: 'UN-002',
-          UnitName: 'แพค',
-        },
-      ]
+      validObjUnit: true,
+      BarcodeRules: [
+        v => !!v || 'กรุณากรอกหมายเลข Barcode',
+        //v => (v && v.length <= 10) || 'Name must be less than 10 characters',
+      ],
+      ObjGoodsData: {
+        ListUnit: [{
+          uid: '221222',
+          Barcode: '12345',
+          Unit: {
+            UnitID: '01',
+            UnitNo: 'UN-01', 
+            UnitName: 'ชิ้น'
+          }
+        }]
+      },
+      ObjUnitData: {},
+      ListSelectUnit: [
+        { UnitID: 'FL', UnitNo: 'UN-01', UnitName: 'ชิ้น' },
+        { UnitID: 'GA', UnitNo: 'UN-02', UnitName: 'กล่อง' },
+        { UnitID: 'NE', UnitNo: 'UN-03', UnitName: 'แพค' },
+      ],
     }),
+    mounted(){
+      // if (!!this) {
+      //   $(this.$refs.modal).on('hidden.bs.modal', function () {
+      //     //this.image = ''
+      //     //this.$refs.form.$reset()
+      //   })
+      // }
+      
+    },
     methods: {
-      addUnit: function () {
-        var obj = {
-          uid: '',
-          Barcode: '123456',
-          UnitNo: 'UN-001',
-          UnitName: 'กล่อง',
-          IsBaseUnit: true
+      InsertUnit: function () {
+        if (this.$refs.form.validate()) {
+          this.ObjUnitData['uid'] = Math.random().toString(16).slice(2)
+          this.ObjGoodsData.ListUnit.push(this.ObjUnitData)
+          this.isDialogUnit = false
         }
-        this.ListUnit.push(obj);
-        console.log(this.$refs)
+      },
+      ClearUnitModal: function () {
+        this.isDialogUnit = false
+        // this.ObjUnitData.Barcode = ''
+        // this.ObjUnitData.Unit = ''
+        // this.ObjUnitData.IsBaseUnit = ''
+      },
+      EditUnit: function (e) {
+        console.log(e)
       },
       close(){
         this.$emit('close');
