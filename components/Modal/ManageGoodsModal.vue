@@ -84,9 +84,22 @@
         <v-card-text>
           <v-col class="content">
             <v-form ref="form" v-model="validObjUnit" lazy-validation>
-              <v-text-field v-model="ObjUnitData.Barcode" :rules="BarcodeRules" label="Barcode" outlined dense placeholder=""></v-text-field>
-              <v-select v-model="ObjUnitData.Unit" :items="ListSelectUnit" item-text="UnitName" :rules="[x => !!x || 'กรุณาเลือกหน่วยนับ']" label="หน่วยนับ" dense outlined return-object></v-select>
-              <v-checkbox v-model="ObjUnitData.IsBaseUnit"></v-checkbox>
+              <v-row>
+                <v-col cols="1">
+                  <v-subheader style="color:red;align-items: start;">*</v-subheader>
+                </v-col>
+                <v-col cols="11">
+                  <v-text-field v-model="ObjUnitData.Barcode" :rules="BarcodeRules" label="Barcode" outlined dense placeholder=""></v-text-field>
+                </v-col>
+                <v-col cols="1">
+                  <v-subheader style="color:red;align-items: start;">*</v-subheader>
+                </v-col>
+                <v-col cols="11">
+                  <v-select v-model="ObjUnitData.Unit" :items="ListSelectUnit" item-text="UnitName" :rules="[x => !!x || 'กรุณาเลือกหน่วยนับ']" label="หน่วยนับ" dense outlined return-object></v-select>
+                </v-col>
+                <v-col cols="1"><v-subheader style="color:red;align-items: start;"></v-subheader></v-col>
+                <v-vol cols="11"><v-subheader><v-checkbox v-model="ObjUnitData.IsBaseUnit"></v-checkbox> หน่วยนับหลัก</v-subheader></v-vol>
+              </v-row>
             </v-form>
           </v-col>
         </v-card-text>
@@ -112,17 +125,7 @@
         v => !!v || 'กรุณากรอกหมายเลข Barcode',
         //v => (v && v.length <= 10) || 'Name must be less than 10 characters',
       ],
-      ObjGoodsData: {
-        ListUnit: [{
-          uid: '221222',
-          Barcode: '12345',
-          Unit: {
-            UnitID: '01',
-            UnitNo: 'UN-01', 
-            UnitName: 'ชิ้น'
-          }
-        }]
-      },
+      ObjGoodsData: {},
       ObjUnitData: {},
       ListSelectUnit: [
         { UnitID: 'FL', UnitNo: 'UN-01', UnitName: 'ชิ้น' },
