@@ -22,7 +22,7 @@
       </v-list-item>
     </v-card-actions>
         <v-card-text>
-          <v-simple-table fixed-header height="300px" รกช>
+          <v-simple-table fixed-header height="300px">
             <template v-slot:default>
               <thead>
                 <tr>

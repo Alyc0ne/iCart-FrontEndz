@@ -1,22 +1,115 @@
 <template>
   <v-row justify="center">
+    <v-dialog v-model="isDialogGoods" max-width="950px">
+      <v-card>
+        <v-toolbar flat dense color="primary" dark>
+          <v-toolbar-title>เพิ่มข้อมูลสินค้า</v-toolbar-title>
+        </v-toolbar>
+        <v-divider></v-divider>
+        <!-- <v-card-text style="height: 45vh; padding-left:0px;"> -->
+          <v-tabs vertical style="border-right: 1px solid rgba(0, 0, 0, 0.12);">
+            <v-tab class="justify-start"><v-icon left>mdi-account</v-icon>ข้อมูลทั่วไป</v-tab>
+            <v-tab class="justify-start"><v-icon left>mdi-lock</v-icon>หน่วยนับ</v-tab>
+            <v-tab class="justify-start" disabled><v-icon left>mdi-access-point</v-icon>รูปภาพ</v-tab>
+
+            <v-tab-item>
+              <v-card flat>
+                <v-card-text>
+                  <v-col class="content">
+                    <div class="subtopic">
+                      <p class="text-left">ข้อมูลสินค้า</p>
+                      
+
+                      <v-text-field label="รหัสสินค้า" outlined dense placeholder=""></v-text-field>
+                      <v-text-field label="ชื่อสินค้า" outlined dense></v-text-field>
+                      <!-- <v-select :items="items" label="หมวดหมู่สินค้า" outlined dense></v-select> -->
+                      <v-textarea outlined label="รายละเอียดสินค้า" value=""></v-textarea>
+                    </div>
+
+                  </v-col>
+                </v-card-text>
+              </v-card>
+            </v-tab-item>
+
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
+                <v-col class="content">
+                  <v-row align="center" justify="end">
+                    <v-btn text normal color="primary" outlined @click="isDialogUnit = true"><span style="margin-right:10px;">เพิ่มหน่วยนับ</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
+                  </v-row>
+                  <v-simple-table fixed-header height="300px" class="testing-table">
+                    <template v-slot:default>
+                      <thead>
+                        <tr>
+                          <th class="text-center">#</th>
+                          <th class="text-left">Barcode</th>
+                          <th class="text-left">รหัสหน่วยนับ</th>
+                          <th class="text-left">ชื่อหน่วยนับ</th>
+                          <th class="text-left">หน่วยนับหลัก</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="item in TempUnit" :key="item.uid" v-bind:class="[transacGridUnitControl.focusUID == item.uid ? focusRow : '']">
+                        <!-- <tr v-for="item in ObjGoodsData.ListUnit" :key="item.uid"> -->
+                          <td ref="ManageAccept">
+                            <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditUnit(item.uid)" style="margin-right:10px;"/>
+                            <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="NotAcceptUnit()"/>
+                          </td>
+                          <td><input type="text" class="transac-input" v-model="item.Barcode"></td>
+                          <td><input type="text" class="transac-input" v-model="item.Unit.UnitNo"></td>
+                          <td><input type="text" class="transac-input" v-model="item.Unit.UnitName"></td>
+                          <td><v-checkbox v-model="item.IsBaseUnit"></v-checkbox></td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </v-col>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
+                <p>
+                  Fusce a quam. Phasellus nec sem in justo pellentesque facilisis. Nam eget dui. Proin viverra, ligula sit amet ultrices semper, ligula arcu tristique sapien, a accumsan nisi mauris ac eros. In dui magna, posuere eget, vestibulum et, tempor auctor, justo.
+                </p>
+
+                <p class="mb-0">
+                  Cras sagittis. Phasellus nec sem in justo pellentesque facilisis. Proin sapien ipsum, porta a, auctor quis, euismod ut, mi. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nam at tortor in tellus interdum sagittis.
+                </p>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+        </v-tabs>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn depressed outlined color="error" @click="isDialogGoods = false">Close</v-btn>
+          <v-btn depressed outlined color="primary">Save</v-btn>
+          <!-- <v-btn color="blue darken-1" text :disabled="!validObjUnit" @click="InsertUnit()">Save</v-btn> -->
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
+  <!-- <v-row justify="center">
     <v-dialog v-model="isDialogGoods" persistent max-width="950px" scrollable>
       <v-card>
         <v-toolbar flat color="primary" dark>
           <v-toolbar-title>เพิ่มข้อมูลสินค้า</v-toolbar-title>
         </v-toolbar>
         <v-tabs vertical>
-          <v-tab><v-icon left>mdi-account</v-icon>ข้อมูลทั่วไป</v-tab>
-          <v-tab><v-icon left>mdi-lock</v-icon>หน่วยนับ</v-tab>
-          <v-tab disabled><v-icon left>mdi-access-point</v-icon>รูปภาพ</v-tab>
+          <v-tab class="justify-start"><v-icon left>mdi-account</v-icon>ข้อมูลทั่วไป</v-tab>
+          <v-tab class="justify-start"><v-icon left>mdi-lock</v-icon>หน่วยนับ</v-tab>
+          <v-tab class="justify-start" disabled><v-icon left>mdi-access-point</v-icon>รูปภาพ</v-tab>
 
           <v-tab-item>
             <v-card flat>
-              <v-card-text>
+              <v-card-text style="height: 500px;">
                 <v-col class="content">
                   <v-text-field label="รหัสสินค้า" outlined dense placeholder=""></v-text-field>
                   <v-text-field label="ชื่อสินค้า" outlined dense></v-text-field>
-                  <!-- <v-select :items="items" label="หมวดหมู่สินค้า" outlined dense></v-select> -->
+                  <v-select :items="items" label="หมวดหมู่สินค้า" outlined dense></v-select>
                   <v-textarea outlined label="รายละเอียดสินค้า" value=""></v-textarea>
                 </v-col>
               </v-card-text>
@@ -25,7 +118,7 @@
 
           <v-tab-item>
             <v-card flat>
-              <v-card-text>
+              <v-card-text style="height: 500px;">
                 <v-col class="content">
                   <v-row align="center" justify="end">
                     <v-btn text normal color="primary" outlined @click="isDialogUnit = true"><span style="margin-right:10px;">เพิ่มหน่วยนับ</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
@@ -73,6 +166,12 @@
             </v-card>
           </v-tab-item>
         </v-tabs>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="isDialogGoods = false">Close</v-btn>
+          <v-btn color="blue darken-1" text :disabled="!validObjUnit" @click="InsertUnit()">Save</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
 
@@ -111,7 +210,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
+  </v-row> -->
 </template>
 
 <script>
@@ -132,6 +231,14 @@
         { UnitID: 'GA', UnitNo: 'UN-02', UnitName: 'กล่อง' },
         { UnitID: 'NE', UnitNo: 'UN-03', UnitName: 'แพค' },
       ],
+      TempUnit: [
+        { uid: 1, Barcode: '123456', Unit: { UnitNo: 'UN-01', UnitName: 'ชิ้น' } },
+        { uid: 2, Barcode: '78910', Unit: { UnitNo: 'UN-02', UnitName: 'กล่อง' } },
+        { uid: 3, Barcode: '14442323', Unit: { UnitNo: 'UN-03', UnitName: 'แพค' } },
+        { uid: 4, Barcode: '12415513', Unit: { UnitNo: 'UN-01', UnitName: 'ชิ้น' } },
+        { uid: 5, Barcode: '36436346', Unit: { UnitNo: 'UN-01', UnitName: 'ชิ้น' } }
+      ],
+      transacGridUnitControl : { focusUID : null }
     }),
     mounted(){
       // if (!!this) {

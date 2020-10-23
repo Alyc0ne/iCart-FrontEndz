@@ -1,0 +1,51 @@
+.myFont {
+    font-family: 'RSU' !important; 
+    font-size: 30px !important;
+}
+
+.v-tabs .v-card__text {
+    height: 400px;
+    overflow: auto;
+    padding-top: 0px;
+}
+
+.subtopic p{
+    width: 100%;
+    text-align: left;
+    height: 25px;
+    font-size: 22px;
+    /* margin-bottom: 2px; */
+    cursor: pointer;
+    font-family: 'RSU';
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.subtopic .v-input {
+    margin-left: 20px !important;
+}
+
+.v-tabs .v-slide-group__wrapper {
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.testing-table {
+    border: thin solid rgba(0, 0, 0, 0.12);
+    /* border-top: none; */
+}
+
+.testing-table > td {
+    border: 1px solid black;
+}
+
+.focusRow {
+    background-color: black;
+}
+
+.focusRow-disabled {
+
+}
+
+.testing-table > .v-data-table__wrapper > table > tbody > tr:not(.focusRow) > td > input {
+    background-color: black;
+}
