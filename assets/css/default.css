@@ -39,7 +39,7 @@
 }
 
 .focusRow {
-    background-color: black;
+    pointer-events: pointer;
 }
 
 .focusRow-disabled {
@@ -47,5 +47,16 @@
 }
 
 .testing-table > .v-data-table__wrapper > table > tbody > tr:not(.focusRow) > td > input {
-    background-color: black;
+    background-color: rgb(235, 235, 228) !important;
+    pointer-events: none;
+}
+
+.testing-table .v-input--selection-controls__input input[role=checkbox] {
+    display: none;
+}
+
+.require {
+    color:red !important;
+    align-items: start !important;
+    font-size: 22px !important;
 }
