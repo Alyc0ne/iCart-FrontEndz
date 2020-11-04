@@ -1,7 +1,11 @@
 .pa_0{
-    padding: 0px;
+    padding: 0px !important;
+}
+
+.pl_0{
+    padding-left: 0px  !important;
 }
 
 .pl_10{
-    padding-left: 10px;
+    padding-left: 10px  !important;
 }

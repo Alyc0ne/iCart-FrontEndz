@@ -60,3 +60,11 @@
     align-items: start !important;
     font-size: 22px !important;
 }
+
+.managePadding-frm > div.col-1, div.col-11{
+    padding: 0px 0px 0px 10px !important;
+}
+
+.managePadding-frm > div.col-11 > .v-subheader{
+    padding-left: 0px !important;
+}
