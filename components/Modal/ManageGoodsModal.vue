@@ -15,15 +15,26 @@
             <v-tab-item>
               <v-card flat>
                 <v-card-text>
-                  <v-col class="content">
+                   <v-col class="content">
                     <div class="subtopic">
                       <p class="text-left">ข้อมูลสินค้า</p>
-                      <v-text-field v-model="ObjGoodsData.GoodsNo" label="GoodsNo" outlined dense placeholder="รหัสสินค้า"></v-text-field>
-                      <v-text-field v-model="ObjGoodsData.GoodsName" label="GoodsName" outlined dense placeholder="ชื่อสินค้า"></v-text-field>
-                      <!-- <v-select :items="items" label="หมวดหมู่สินค้า" outlined dense></v-select> -->
-                      <v-textarea v-model="ObjGoodsData.GoodsDesc" label="GoodsDescription" outlined placeholder="รายละเอียดสินค้า"></v-textarea>
+                        <v-form ref="form" v-model="validObjGoods" lazy-validation class="managePadding-frm">
+                          <v-row>
+                            <v-col cols="1"><v-subheader class="require"></v-subheader></v-col>
+                            <v-col cols="11">
+                              <v-text-field v-model="ObjGoodsData.GoodsNo" label="GoodsNo" outlined dense disabled></v-text-field>
+                            </v-col>
+                            <v-col cols="1"><v-subheader class="require">*</v-subheader></v-col>
+                            <v-col cols="11">
+                              <v-text-field v-model="ObjGoodsData.GoodsName" :rules="[x => !!x || 'กรุณากรอกชื่อสินค้า']" label="GoodsName" outlined dense placeholder="ชื่อสินค้า" autofocus></v-text-field>
+                            </v-col>
+                            <v-col cols="1"><v-subheader class="require"></v-subheader></v-col>
+                            <v-col cols="11">
+                              <v-textarea v-model="ObjGoodsData.GoodsDesc" label="GoodsDescription" outlined placeholder="รายละเอียดสินค้า"></v-textarea>
+                            </v-col>
+                          </v-row>
+                        </v-form>
                     </div>
-
                   </v-col>
                 </v-card-text>
               </v-card>
@@ -87,8 +98,8 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn depressed outlined color="error" @click="isDialogGoods = false">Close</v-btn>
-          <v-btn depressed outlined color="primary">Save</v-btn>
+          <v-btn depressed outlined color="error" @click="closeModalGoods()">Close</v-btn>
+          <v-btn depressed outlined color="primary" :disabled="!validObjGoods">Save</v-btn>
           <!-- <v-btn color="blue darken-1" text :disabled="!validObjUnit" @click="InsertUnit()">Save</v-btn> -->
         </v-card-actions>
       </v-card>
@@ -100,7 +111,7 @@
         <v-toolbar flat dense color="primary" dark>
           <v-toolbar-title>เพิ่มหน่วยนับ</v-toolbar-title>
         </v-toolbar>
-        <v-card-text>
+        <v-card-text style="height:350px;">
           <v-col class="content">
             <v-form ref="form" v-model="validObjUnit" lazy-validation class="managePadding-frm">
               <v-row>
@@ -108,7 +119,7 @@
                   <v-subheader class="require">*</v-subheader>
                 </v-col>
                 <v-col cols="11">
-                  <v-text-field v-model="ObjUnitData.Barcode" :rules="BarcodeRules" label="Barcode" outlined dense placeholder="" autofocus></v-text-field>
+                  <v-text-field v-model="ObjUnitData.Barcode" :rules="[x => !!x || 'กรุณากรอกหมายเลข Barcode']" label="Barcode" outlined dense placeholder="หมายเลข Barcode" autofocus></v-text-field>
                 </v-col>
                 <v-col cols="1">
                   <v-subheader class="require">*</v-subheader>
@@ -116,20 +127,20 @@
                 <v-col cols="11">
                   <v-select v-model="ObjUnitData.Unit" :items="ListSelectUnit" item-text="UnitName" :rules="[x => !!x || 'กรุณาเลือกหน่วยนับ']" label="หน่วยนับ" dense outlined return-object></v-select>
                 </v-col>
-                <v-col cols="1"><v-subheader></v-subheader></v-col>
-                <v-col cols="11"><v-subheader class="pl_0"><v-checkbox v-model="ObjUnitData.IsBaseUnit"></v-checkbox> หน่วยนับหลัก</v-subheader></v-col>
                 <v-col cols="1">
                   <v-subheader class="require"></v-subheader>
                 </v-col>
                 <v-col cols="11">
-                  <v-text-field v-model="ObjUnitData.GoodsCost" label="GoodsCost" outlined dense placeholder=""></v-text-field>
+                  <v-text-field v-model="ObjUnitData.GoodsCost" label="GoodsCost" outlined dense placeholder="ราคาต้นทุน"></v-text-field>
                 </v-col>
                 <v-col cols="1">
                   <v-subheader class="require">*</v-subheader>
                 </v-col>
                 <v-col cols="11">
-                  <v-text-field v-model="ObjUnitData.GoodsPrice" :rules="GoodsPriceRules" label="GoodsPrice" outlined dense placeholder=""></v-text-field>
+                  <v-text-field v-model="ObjUnitData.GoodsPrice" :rules="[x => !!x || 'กรุณากรอกราคาขาย']" label="GoodsPrice" outlined dense placeholder="ราคาขาย"></v-text-field>
                 </v-col>
+                <v-col cols="1"><v-subheader></v-subheader></v-col>
+                <v-col cols="11"><v-subheader class="pl_0"><v-checkbox v-model="ObjUnitData.IsBaseUnit"></v-checkbox> หน่วยนับหลัก</v-subheader></v-col>
               </v-row>
             </v-form>
           </v-col>
@@ -151,10 +162,14 @@
     data: () => ({
       dialog: false,
       isDialogUnit: false,
+      validObjGoods: true,
       validObjUnit: true,
       BarcodeRules: [
         v => !!v || 'กรุณากรอกหมายเลข Barcode',
         //v => (v && v.length <= 10) || 'Name must be less than 10 characters',
+      ],
+      GoodsPriceRules: [
+        x => !!x || 'กรุณากรอกราคาขาย'
       ],
       ObjGoodsData: { ListUnit: [] },
       ObjUnitData: {},
@@ -176,6 +191,9 @@
       // whenever question changes, this function will run
       ObjGoodsData: function (newObjGoodsData, oldObjGoodsData) {
         console.log(this.newObjGoodsData)
+      },
+      isDialogGoods: function (val) {
+        this.ObjGoodsData.GoodsNo = "ITM-001"
       }
     },
     mounted(){
@@ -197,7 +215,7 @@
       },
       ClearUnitModal: function () {
         this.isDialogUnit = false
-        this.ObjUnitData = { }
+        this.ObjUnitData = {}
         this.$refs.form.reset()
       },
       EditUnit: function (e) {
@@ -210,7 +228,8 @@
       AccpetUnit: function () {
          this.transacGridUnitControl.focusUID = null
       },
-      close(){
+      closeModalGoods(){
+        this.$refs.form.reset()
         this.$emit('close');
       }
     }

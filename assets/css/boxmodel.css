@@ -1,3 +1,9 @@
+/* Keyword
+
+- Width , Height
+
+*/
+
 .pa_0{
     padding: 0px !important;
 }
@@ -8,4 +14,54 @@
 
 .pl_10{
     padding-left: 10px  !important;
+}
+
+
+/* Width , Height */
+.w_10p {
+    width: 10%;
+}
+
+.w_15p {
+    width: 15%;
+}
+
+.w_20p {
+    width: 20%;
+}
+
+.w_30p {
+    width: 30%;
+}
+
+.w_35p {
+    width: 35%;
+}
+
+.w_40p {
+    width: 40%;
+}
+
+.w_50p {
+    width: 50%;
+}
+
+.w_60p {
+    width: 60%;
+}
+
+.w_70p {
+    width: 70%;
+}
+
+.w_80p {
+    width: 80%;
+}
+
+.w_90p {
+    width: 90%;
+}
+
+.w_100p {
+    width: 100%;
 }
