@@ -9,7 +9,8 @@
             </v-list-item-avatar>
 
             <v-list-item-content>
-              <v-list-item-title>รายการสินค้า {{ this.ip }}</v-list-item-title>
+              <v-list-item-title>รายการสินค้า</v-list-item-title>
+               <div> <button @click='increment'> Add data</button></div>
             </v-list-item-content>
 
             <v-row align="center" justify="end" style="padding: 0px 10px 10px 10px;">
@@ -36,11 +37,11 @@
                     <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditGoods(item.GoodsID)" style="margin-right:10px;"/>
                     <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="DeleteGoods(item.GoodsID)"/>
                   </td>
-                  <td class="w_15p text-left">{{ item.GoodsBarcode }}</td>
+                  <td class="w_15p text-left">{{ item.barcode }}</td>
                   <td class="w_35p text-left">{{ item.goodsName }}</td>
-                  <td class="w_20p text-left">{{ item.UnitName }}</td>
-                  <td class="w_10p text-right">{{ item.GoodsCost }}</td>
-                  <td class="w_10p text-right">{{ item.GoosPrice }}</td>
+                  <td class="w_20p text-left">{{ item.unitName }}</td>
+                  <td class="w_10p text-right">{{ item.goodsCost }}</td>
+                  <td class="w_10p text-right">{{ item.goodsSalePrice }}</td>
                 </tr>
               </tbody>
             </template>
@@ -56,6 +57,7 @@
 <script>
 import Logo from '~/components/Logo.vue'
 import ManageGoodsModal from '@/components/Modal/ManageGoodsModal'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -65,32 +67,29 @@ export default {
     return {
       ip: null,
       isDialogGoods: false,
-      ListGoods: [
-        // {
-        //   GoodsID: '1',
-        //   GoodsBarcode: 'GN-001',
-        //   GoodsName: 'น้ำสิงห์',
-        //   UnitName: 'ขวด',
-        //   GoodsCost: '500.00',
-        //   GoosPrice: '1,250.00'
-        // },
-        // {
-        //   GoodsID: '2',
-        //   GoodsBarcode: 'GN-002',
-        //   GoodsName: 'Ryzen S5000 3.5Gz 3800Mhz',
-        //   UnitName: 'ชิ้น',
-        //   GoodsCost: '4,500.00',
-        //   GoosPrice: '11,250.00'
-        // }
-      ],
+      ListGoods: [],
     }
   },
-  mounted() {
-    this.fetchSomething()
+  fetch ({ store }) {
+    store.commit('increment')
   },
+  computed: {
+    ListGoods: {
+      get() {
+        console.log(this.$store.state.products)
+      },
+      set(val){}
+    }
+  },
+  // mounted() {
+  //   console.log(this.$store.state.products)
+  //   //console.log(this.state.products)
+  //   //this.fetchListGoods()
+  // },
   methods: {
-    async fetchSomething() {
+    async fetchListGoods() {
       this.ListGoods = await this.$axios.$get('https://localhost:5001/api/Goods')
+      console.log(this.ListGoods)
     },
     AddGoods() {
       this.isDialogGoods = true;
@@ -98,6 +97,14 @@ export default {
     closeModal() {
       this.isDialogGoods = false;
     },
+    EditGoods(GoodsID) {
+      if (!!GoodsID) {
+        
+      }
+    },
+    increment () {
+      this.$store.commit('increment')
+    }
   }
 }
 </script>
