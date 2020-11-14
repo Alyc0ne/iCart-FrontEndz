@@ -10,11 +10,12 @@
 
             <v-list-item-content>
               <v-list-item-title>รายการสินค้า</v-list-item-title>
-               <div> <button @click='increment'> Add data</button></div>
+               <div></div>
             </v-list-item-content>
 
             <v-row align="center" justify="end" style="padding: 0px 10px 10px 10px;">
               <v-btn text normal color="primary" outlined @click="AddGoods()"><span style="margin-right:10px;">เพิ่มสินค้า</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
+              <v-btn text normal color="primary" outlined @click="showGood()"><span style="margin-right:10px;">ดูสินค้า</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
             </v-row>
           </v-list-item>
         </v-card-actions>
@@ -24,6 +25,7 @@
               <thead>
                 <tr>
                   <th class="text-center">#</th>
+                  <th class="text-left">รหัสสินค้า</th>
                   <th class="text-left">ฺBarcode</th>
                   <th class="text-left">ชื่อสินค้า</th>
                   <th class="text-left">หน่วยนับ</th>
@@ -32,16 +34,17 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in ListGoods" :key="item.GoodsID">
+                <tr v-for="item in ListGoods" :key="item.goodsID">
                   <td class="w_10p text-center">
-                    <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditGoods(item.GoodsID)" style="margin-right:10px;"/>
-                    <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="DeleteGoods(item.GoodsID)"/>
+                    <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditGoods(item.goodsID)" style="margin-right:10px;"/>
+                    <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="DeleteGoods(item.goodsID)"/>
                   </td>
-                  <td class="w_15p text-left">{{ item.barcode }}</td>
-                  <td class="w_35p text-left">{{ item.goodsName }}</td>
-                  <td class="w_20p text-left">{{ item.unitName }}</td>
-                  <td class="w_10p text-right">{{ item.goodsCost }}</td>
-                  <td class="w_10p text-right">{{ item.goodsSalePrice }}</td>
+                  <td class="w_15p text-left">{{ item.goodsNo }}</td>
+                  <td class="w_15p text-left">{{ item.ObjUnit.barcode }}</td>
+                  <td class="w_30p text-left">{{ item.goodsName }}</td>
+                  <td class="w_25p text-left">{{ item.ObjUnit.unitName }}</td>
+                  <td class="w_12-5p text-right">{{ item.ObjUnit.goodsCost }}</td>
+                  <td class="w_12-5p text-right">{{ item.ObjUnit.goodsSalePrice }}</td>
                 </tr>
               </tbody>
             </template>
@@ -57,7 +60,7 @@
 <script>
 import Logo from '~/components/Logo.vue'
 import ManageGoodsModal from '@/components/Modal/ManageGoodsModal'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 
 export default {
   components: {
@@ -67,19 +70,18 @@ export default {
     return {
       ip: null,
       isDialogGoods: false,
-      ListGoods: [],
+      barcode: "",
+      goodsName: "",
+      unitName: "",
+      goodsCost: 0,
+      goodsSalePrice: 0
+      //ListGoods: [],
     }
-  },
-  fetch ({ store }) {
-    store.commit('increment')
   },
   computed: {
-    ListGoods: {
-      get() {
-        console.log(this.$store.state.products)
-      },
-      set(val){}
-    }
+    ...mapState({
+      ListGoods: state => state.ListGoods
+    })
   },
   // mounted() {
   //   console.log(this.$store.state.products)
@@ -90,6 +92,9 @@ export default {
     async fetchListGoods() {
       this.ListGoods = await this.$axios.$get('https://localhost:5001/api/Goods')
       console.log(this.ListGoods)
+    },
+    showGood() {
+      console.log(this.$store.state.ListGoods)
     },
     AddGoods() {
       this.isDialogGoods = true;

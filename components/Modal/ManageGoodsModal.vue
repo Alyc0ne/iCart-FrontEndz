@@ -22,15 +22,15 @@
                           <v-row>
                             <v-col cols="1"><v-subheader class="require"></v-subheader></v-col>
                             <v-col cols="11">
-                              <v-text-field v-model="ObjGoodsData.GoodsNo" label="GoodsNo" outlined dense disabled></v-text-field>
+                              <v-text-field v-model="ObjGoodsData.goodsNo" label="GoodsNo" outlined dense disabled></v-text-field>
                             </v-col>
                             <v-col cols="1"><v-subheader class="require">*</v-subheader></v-col>
                             <v-col cols="11">
-                              <v-text-field v-model="ObjGoodsData.GoodsName" :rules="[x => !!x || 'กรุณากรอกชื่อสินค้า']" label="GoodsName" outlined dense placeholder="ชื่อสินค้า" autofocus></v-text-field>
+                              <v-text-field v-model="ObjGoodsData.goodsName" :rules="[x => !!x || 'กรุณากรอกชื่อสินค้า']" label="GoodsName" outlined dense placeholder="ชื่อสินค้า" autofocus></v-text-field>
                             </v-col>
                             <v-col cols="1"><v-subheader class="require"></v-subheader></v-col>
                             <v-col cols="11">
-                              <v-textarea v-model="ObjGoodsData.GoodsDesc" label="GoodsDescription" outlined placeholder="รายละเอียดสินค้า"></v-textarea>
+                              <v-textarea v-model="ObjGoodsData.goodsDesc" label="GoodsDescription" outlined placeholder="รายละเอียดสินค้า"></v-textarea>
                             </v-col>
                           </v-row>
                         </v-form>
@@ -99,7 +99,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn depressed outlined color="error" @click="closeModalGoods()">Close</v-btn>
-          <v-btn depressed outlined color="primary" :disabled="!validObjGoods">Save</v-btn>
+          <v-btn depressed outlined color="primary" :disabled="!validObjGoods" @click="AddGoods">Save</v-btn>
           <!-- <v-btn color="blue darken-1" text :disabled="!validObjUnit" @click="InsertUnit()">Save</v-btn> -->
         </v-card-actions>
       </v-card>
@@ -157,6 +157,7 @@
 </template>
 
 <script>
+  import { mapState, mapMutations } from 'vuex'
   export default {
     props: ['isDialogGoods'],
     data: () => ({
@@ -171,7 +172,8 @@
       GoodsPriceRules: [
         x => !!x || 'กรุณากรอกราคาขาย'
       ],
-      ObjGoodsData: { ListUnit: [] },
+      ObjGoodsData: { ObjUnit: [] },
+      //ObjGoodsData: { ListUnit: [] },ObjUnit
       ObjUnitData: {},
       ListSelectUnit: [
         { UnitID: 'FL', UnitNo: 'UN-01', UnitName: 'ชิ้น' },
@@ -193,7 +195,7 @@
         console.log(this.newObjGoodsData)
       },
       isDialogGoods: function (val) {
-        this.ObjGoodsData.GoodsNo = "ITM-001"
+        this.ObjGoodsData.goodsNo = "ITM-001"
       }
     },
     mounted(){
@@ -206,6 +208,26 @@
       
     },
     methods: {
+      ...mapMutations({
+        addGoods: "addGoods"
+      }),
+      AddGoods() {
+        let config = {
+          headers : { "Content-Type": "application/x-www-form-urlendcorded" }
+        }
+        this.$axios
+          .$post('https://localhost:5001/api/PostGoods', { GoodsNo : 'ITM-001'})
+          .then(response => {
+            console.log(response)
+          })
+          .catch(err => {
+            alert(err)
+          })
+
+        //console.log(this.ObjGoodsData)
+        //this.addGoods(this.ObjGoodsData)
+        //this.closeModalGoods()
+      },
       InsertUnit: function () {
         if (this.$refs.form.validate()) {
           this.ObjUnitData['uid'] = Math.random().toString(16).slice(2)

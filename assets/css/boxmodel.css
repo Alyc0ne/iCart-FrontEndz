@@ -18,8 +18,16 @@
 
 
 /* Width , Height */
+.w_5p {
+    width: 5%;
+}
+
 .w_10p {
     width: 10%;
+}
+
+.w_12-5p {
+    width: 12.5%;
 }
 
 .w_15p {

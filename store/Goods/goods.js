@@ -1,5 +1,14 @@
 export default () => ({
-  ListGoods: []
+  ListGoods: [
+    {
+      goodsID: 1,
+      barcode: '123456',
+      goodsName: 'ชานมไข่มุก',
+      unitName: 'แก้ว',
+      goodsCost: '25.00',
+      goodsSalePrice: '30.00'
+    }
+  ]
 })
 
 const modules = {
