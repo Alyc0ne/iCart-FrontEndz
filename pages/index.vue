@@ -34,17 +34,17 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in ListGoods" :key="item.goodsID">
+                <tr v-for="item in $store.getters.ListGoods" :key="item.goodsID">
                   <td class="w_10p text-center">
-                    <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditGoods(item.goodsID)" style="margin-right:10px;"/>
-                    <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="DeleteGoods(item.goodsID)"/>
+                    <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="editGoods(item.goodsID)" style="margin-right:10px;"/>
+                    <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="deleteGoods(item.goodsID)"/>
                   </td>
                   <td class="w_15p text-left">{{ item.goodsNo }}</td>
-                  <td class="w_15p text-left">{{ item.ObjUnit.barcode }}</td>
-                  <td class="w_30p text-left">{{ item.goodsName }}</td>
-                  <td class="w_25p text-left">{{ item.ObjUnit.unitName }}</td>
-                  <td class="w_12-5p text-right">{{ item.ObjUnit.goodsCost }}</td>
-                  <td class="w_12-5p text-right">{{ item.ObjUnit.goodsSalePrice }}</td>
+                  <td class="w_15p text-left">{{ item.barcode }}</td>
+                  <td class="w_20p text-left">{{ item.goodsName }}</td>
+                  <td class="w_10p text-left">{{ item.unitName }}</td>
+                  <td class="w_12-5p text-right">{{ item.goodsCost }}</td>
+                  <td class="w_12-5p text-right">{{ item.goodsSalePrice }}</td>
                 </tr>
               </tbody>
             </template>
@@ -83,15 +83,15 @@ export default {
       ListGoods: state => state.ListGoods
     })
   },
-  // mounted() {
-  //   console.log(this.$store.state.products)
-  //   //console.log(this.state.products)
-  //   //this.fetchListGoods()
-  // },
+  created() {
+    this.fetchListGoods();
+  },
+  mounted() {
+    //console.log(this.$store.getters.ListGoods)
+  },
   methods: {
-    async fetchListGoods() {
-      this.ListGoods = await this.$axios.$get('https://localhost:5001/api/Goods')
-      console.log(this.ListGoods)
+    fetchListGoods() {
+      this.$store.dispatch("fetchListGoods")
     },
     showGood() {
       console.log(this.$store.state.ListGoods)
@@ -102,13 +102,13 @@ export default {
     closeModal() {
       this.isDialogGoods = false;
     },
-    EditGoods(GoodsID) {
-      if (!!GoodsID) {
-        
+    editGoods(goodsID) {
+      if (!!goodsID) {
+        this.$store.dispatch("editGoods", goodsID).then(() => {
+          this.isDialogGoods = true      
+        })
+        //this.$store.commit('setItemFocus', GoodsID)
       }
-    },
-    increment () {
-      this.$store.commit('increment')
     }
   }
 }

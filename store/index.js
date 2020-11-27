@@ -1,26 +1,46 @@
+import https from 'https'
+
+let netcore_api = "https://localhost:5001/api/";
+const agent = new https.Agent({  
+  rejectUnauthorized: false
+});
+
 export const state = () => ({
-    ListGoods: [
-        {
-          goodsID: 1,
-          goodsNo: 'ITM-000',
-          goodsName: 'ชานมไข่มุก',
-          ObjUnit : 
-              {
-                barcode: '123456',
-                unitName: 'แก้ว',
-                goodsCost: '25.00',
-                goodsSalePrice: '30.00'
-              }
-        }
-      ]
+    ListGoods: [],
+    goodsObj: {}
 })
 
+export const actions = {
+  async fetchListGoods({ commit }) {
+    const listGoods = await this.$axios.$get(netcore_api + 'Goods')
+    commit('fetchListGoods', listGoods)
+  },
+  async editGoods({ commit }, payload) {
+    const goods = await this.$axios.$get(netcore_api + 'Goods/' + payload)
+    commit('editGoods', goods)
+  },
+}
+
 export const mutations = {
-     addGoods(state, payload){
-         let newGoods = {
-             ...payload,
-             id: 2
-         }
-         state.ListGoods.push(newGoods)
-     }
+  fetchListGoods(state, data){
+    state.ListGoods = data
+  },
+  editGoods(state, data){
+    state.goodsObj.isInsert = false
+    state.goodsObj.goods = data
+  },
+
+
+  addGoods(state, payload){
+      let newGoods = {
+          ...payload,
+          id: 2
+      }
+      state.ListGoods.push(newGoods)
+  },
+}
+
+export const getters = {
+  ListGoods: state => state.ListGoods,
+  goodsObj: state => state.goodsObj
 }

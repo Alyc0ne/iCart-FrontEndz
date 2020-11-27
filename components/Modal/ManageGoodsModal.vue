@@ -3,7 +3,7 @@
     <v-dialog v-model="isDialogGoods" max-width="950px">
       <v-card>
         <v-toolbar flat dense color="primary" dark>
-          <v-toolbar-title>เพิ่มข้อมูลสินค้า</v-toolbar-title>
+          <v-toolbar-title>{{ $store.getters.goodsObj.isInsert ? 'เพิ่มข้อมูลสินค้า' : 'แก้ไขข้อมูลสินค้า' }} </v-toolbar-title>
         </v-toolbar>
         <v-divider></v-divider>
         <!-- <v-card-text style="height: 45vh; padding-left:0px;"> -->
@@ -59,20 +59,20 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="item in ObjGoodsData.ListUnit" :key="item.uid" :class="[transacGridUnitControl.focusUID == item.uid ? 'focusRow' : '']">
+                        <tr v-for="unit in ObjGoodsData.listUnit" :key="unit.uid" :class="[transacGridUnitControl.focusUID == unit.uid ? 'focusRow' : '']">
                         <!-- <tr v-for="item in ObjGoodsData.ListUnit" :key="item.uid"> -->
-                          <td v-if="transacGridUnitControl.focusUID != item.uid">
-                            <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditUnit(item.uid)" style="margin-right:10px;"/>
+                          <td v-if="transacGridUnitControl.focusUID != unit.uid">
+                            <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditUnit(unit.uid)" style="margin-right:10px;"/>
                             <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="DeleteptUnit()"/>
                           </td>
-                          <td v-else-if="transacGridUnitControl.focusUID == item.uid">
+                          <td v-else-if="transacGridUnitControl.focusUID == unit.uid">
                             <font-awesome-icon :icon="['fas', 'check']" class="pointer c-blue" @click="AccpetUnit()" style="margin-right:10px;"/>
                             <font-awesome-icon :icon="['fas', 'times']" class="pointer c-red" @click="NotAcceptUnit()"/>
                           </td>
-                          <td><input type="text" class="transac-input" v-model="item.Barcode"></td>
-                          <td><input type="text" class="transac-input" v-model="item.Unit.UnitNo"></td>
-                          <td><input type="text" class="transac-input" v-model="item.Unit.UnitName"></td>
-                          <td><v-checkbox :disabled="transacGridUnitControl.focusUID != item.uid" v-model="item.IsBaseUnit"></v-checkbox></td>
+                          <td><input type="text" class="transac-input" v-model="unit.barcode"></td>
+                          <td><input type="text" class="transac-input" v-model="unit.unitNo"></td>
+                          <td><input type="text" class="transac-input" v-model="unit.unitName"></td>
+                          <td><v-checkbox :disabled="transacGridUnitControl.focusUID != unit.uid" v-model="unit.isBaseUnit"></v-checkbox></td>
                         </tr>
                       </tbody>
                     </template>
@@ -99,7 +99,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn depressed outlined color="error" @click="closeModalGoods()">Close</v-btn>
-          <v-btn depressed outlined color="primary" :disabled="!validObjGoods" @click="AddGoods">Save</v-btn>
+          <v-btn depressed outlined color="primary" :disabled="!validObjGoods" @click="AddGoods">{{ $store.getters.goodsObj.isInsert ? 'Save' : 'Update' }}</v-btn>
           <!-- <v-btn color="blue darken-1" text :disabled="!validObjUnit" @click="InsertUnit()">Save</v-btn> -->
         </v-card-actions>
       </v-card>
@@ -172,7 +172,7 @@
       GoodsPriceRules: [
         x => !!x || 'กรุณากรอกราคาขาย'
       ],
-      ObjGoodsData: { ObjUnit: [] },
+      ObjGoodsData: { ListUnit: [] },
       //ObjGoodsData: { ListUnit: [] },ObjUnit
       ObjUnitData: {},
       ListSelectUnit: [
@@ -191,11 +191,18 @@
     }),
     watch: {
       // whenever question changes, this function will run
-      ObjGoodsData: function (newObjGoodsData, oldObjGoodsData) {
-        console.log(this.newObjGoodsData)
-      },
+      // ObjGoodsData: function (newObjGoodsData, oldObjGoodsData) {
+      //   console.log(this.newObjGoodsData)
+      // },
       isDialogGoods: function (val) {
-        this.ObjGoodsData.goodsNo = "ITM-001"
+        var GoodsNo = "ITM-001"
+        var goodsObj = this.$store.getters.goodsObj  
+        if (!!goodsObj) {
+            this.ObjGoodsData = goodsObj.goods
+            console.log(goodsObj)
+        } else {
+          this.ObjGoodsData.goodsNo = GoodsNo
+        }
       }
     },
     mounted(){
@@ -242,7 +249,7 @@
       },
       EditUnit: function (e) {
         this.transacGridUnitControl.focusUID = e
-        console.log(e)
+        //console.log(e)
       },
       DeleteptUnit: function () {
         
