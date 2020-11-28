@@ -2,7 +2,7 @@
   <v-row justify="center" align="center">
     <v-col cols="12" sm="12" md="12">
       <v-card>
-        <!-- <v-card-actions>
+        <v-card-actions>
           <v-list-item class="grow">
             <v-list-item-avatar color="grey" style="width: 60px !important; height:60px !important;">
               <v-img class="elevation-6" alt="" src="https://sv1.picz.in.th/images/2020/11/09/boKFC8.png"></v-img>
@@ -14,8 +14,7 @@
             </v-list-item-content>
 
             <v-row align="center" justify="end" style="padding: 0px 10px 10px 10px;">
-              <v-btn text normal color="primary" outlined @click="AddGoods()"><span style="margin-right:10px;">เพิ่มสินค้า</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
-              <v-btn text normal color="primary" outlined @click="showGood()"><span style="margin-right:10px;">ดูสินค้า</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
+              <v-btn text normal color="primary" outlined @click="AddGoods()"><span style="margin-right:10px;">เพิ่มสินค้า</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>              
             </v-row>
           </v-list-item>
         </v-card-actions>
@@ -33,7 +32,7 @@
                   <th class="text-right">ราคาสินค้า</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody v-if="$store.getters.ListGoods.length > 0">
                 <tr v-for="item in $store.getters.ListGoods" :key="item.goodsID">
                   <td class="w_10p text-center">
                     <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="editGoods(item.goodsID)" style="margin-right:10px;"/>
@@ -47,11 +46,16 @@
                   <td class="w_12-5p text-right">{{ item.goodsSalePrice }}</td>
                 </tr>
               </tbody>
+              <tbody v-else>
+                <tr>
+                  <td colspan="7" class="text-center">ไม่มีรายการสินค้า</td>
+                </tr>
+              </tbody>
             </template>
           </v-simple-table>
         </v-card-text>
 
-        <ManageGoodsModal :isDialogGoods="isDialogGoods" @close="closeModal"/> -->
+        <ManageGoodsModal :isDialogGoods="isDialogGoods" @close="closeModal"/>
       </v-card>
     </v-col>
   </v-row>

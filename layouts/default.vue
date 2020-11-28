@@ -20,7 +20,7 @@
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container class="fill-height" fluid>
         <nuxt />
       </v-container>
     </v-main>
@@ -45,9 +45,14 @@ export default {
           to: '/'
         },
         {
+          icon: 'mdi-apps',
+          title: 'Goods',
+          to: '/IC/Goods/List'
+        },
+        {
           icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
+          title: 'POS',
+          to: '/pos'
         }
       ],
       miniVariant: false,
