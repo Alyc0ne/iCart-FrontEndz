@@ -7,7 +7,9 @@ const agent = new https.Agent({
 
 export const state = () => ({
     ListGoods: [],
-    goodsObj: {}
+    goodsObj: {},
+    isWrongBarcode: false,
+    isAlert: false
 })
 
 export const actions = {
@@ -19,6 +21,12 @@ export const actions = {
     const goods = await this.$axios.$get(netcore_api + 'Goods/' + payload)
     commit('editGoods', goods)
   },
+  setIsWrongBarcode({ commit }, payload){
+    commit('setIsWrongBarcode', payload)
+  },
+  callAlert({ commit }, payload){
+    commit('callAlert', payload)
+  }
 }
 
 export const mutations = {
@@ -29,7 +37,12 @@ export const mutations = {
     state.goodsObj.isInsert = false
     state.goodsObj.goods = data
   },
-
+  setIsWrongBarcode(state, data){
+    state.isWrongBarcode = data
+  },
+  callAlert(state, data){
+    state.isAlert = data
+  },
 
   addGoods(state, payload){
       let newGoods = {
@@ -42,5 +55,7 @@ export const mutations = {
 
 export const getters = {
   ListGoods: state => state.ListGoods,
-  goodsObj: state => state.goodsObj
+  goodsObj: state => state.goodsObj,
+  isWrongBarcode: state => state.isWrongBarcode,
+  isAlert: state => state.isAlert
 }

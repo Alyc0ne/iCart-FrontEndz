@@ -1,5 +1,5 @@
 <template>
-  <v-app light class="myFont">
+  <v-app light class="myFont" :class="[$store.getters.isAlert == true ? 'over-layc' : '']">
     <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" clipped fixed app>
       <v-list>
         <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
@@ -20,6 +20,12 @@
     </v-app-bar>
 
     <v-main>
+      <div :hidden="!$store.getters.isAlert" style="">
+        <v-alert border="top" colored-border type="warning" elevation="2" dismissible :value="$store.getters.isAlert" max-height="100" style="width: 40%; position: absolute; bottom: 20px; right: 20px; z-index:3;">
+      <h3>ไม่สามารถดำเนินการได้</h3>
+        ไม่เจอสินค้าที่ค้นหา
+      </v-alert>
+      </div>
       <v-container class="fill-height" fluid>
         <nuxt />
       </v-container>
@@ -63,3 +69,14 @@ export default {
   }
 }
 </script>
+
+<style>
+.over-lay {
+  background-color: white;
+  opacity: 0.2;
+  width:100%;
+  height:100%;
+  position: absolute;
+  z-index:2;
+}
+</style>
