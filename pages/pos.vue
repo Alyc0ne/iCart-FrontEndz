@@ -2,7 +2,7 @@
     <v-row class="align-self-start fill-height">
         <v-col cols="8">
             <v-card height="500">
-                <v-card-text>
+                <v-card-text class="section-barcode">
                     <v-text-field v-model="barcode" label="Barcode" outlined dense placeholder="หมายเลข Barcode" autofocus @change="getGoodsByBarCode" :rules="[() => $store.getters.isWrongBarcode == false || 'ไม่เจอสินค้าที่ตรงกับ Barcode ที่กรอกมา']"></v-text-field>
                     <v-row>
                         <!-- LEFT SIDE -->
@@ -56,7 +56,7 @@
                     </div>
                     <div class="listcart" v-else>
                         <v-card flat class="ma-3 text-xs-center">
-                        <v-img src="_nuxt/assets/images/cart-empty.png" aspect-ratio="2.75"></v-img>
+                        <v-img v-bind:src="require('../assets/images/cart-empty.png')" aspect-ratio="2.75"></v-img>
                         <v-card-text class="text-center"><h2>ไม่มีรายการสินค้า</h2></v-card-text>
                         </v-card>
                     </div>
@@ -107,7 +107,10 @@
 </template>
 
 <script>
+import global from '@/mixins/global'
+
 export default {
+    mixins: [global],
     data: () => ({
         barcode: null,
         listCart: [],
@@ -129,7 +132,7 @@ export default {
     methods: {
         async getGoodsByBarCode() {
             if (!!this.barcode) {
-                this.$store.dispatch("setIsWrongBarcode", false)
+                this.setIsWrongBarcode(false)
                 const Goods = await this.$axios.$get('https://localhost:5001/api/Goods/GetGoodsByBarcode/' + this.barcode)
                 this.barcode = null
                 if (!!Goods) {
@@ -145,7 +148,7 @@ export default {
                 }
                 else
                 {
-                    this.$store.dispatch("setIsWrongBarcode", true)
+                    this.setIsWrongBarcode(true)
                 }
             }
         },
@@ -184,8 +187,12 @@ export default {
                 }
             }
         }, 
-        numberWithCommas(x) {
-            return parseFloat(x).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        setIsWrongBarcode(x) {
+            if (!!x) {
+                //if (!this.$store.getters.isWrongBarcode) {
+                    this.$store.dispatch("setIsWrongBarcode", x)
+                //}
+            }
         }
     }
 }
@@ -201,5 +208,13 @@ export default {
 
     .listcart .v-text-field .v-input__control .v-input__slot input{
         text-align: center;
+    }
+
+    .section-barcode .v-messages {
+        font-size: 16px;
+    }
+
+    .section-barcode .v-messages__message {
+        line-height: 20px;
     }
 </style>

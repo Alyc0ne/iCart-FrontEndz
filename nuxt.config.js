@@ -15,7 +15,7 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Sarabun:wght@100;400&display=swap' }
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Athiti&display=swap' }
     ]
   },
 
@@ -56,7 +56,15 @@ export default {
     proxy: true
   },
   proxy: {
-    '/api/': { target: 'https://localhost:5001', pathRewrite: {'^/api/': ''}, changeOrigin: true }
+    '/api/': {
+      target: 'http://localhost:69/api/',
+      pathRewrite: {'^/api/': ''}
+    }
+    // '/api/': { 
+    //   target: 'http://localhost:69/api/Goods', 
+    //   changeOrigin: true, 
+    //   secure: false 
+    // }
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)

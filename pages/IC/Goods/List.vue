@@ -42,8 +42,8 @@
                   <td class="w_15p text-left">{{ item.barcode }}</td>
                   <td class="w_20p text-left">{{ item.goodsName }}</td>
                   <td class="w_10p text-left">{{ item.unitName }}</td>
-                  <td class="w_12-5p text-right">{{ item.goodsCost }}</td>
-                  <td class="w_12-5p text-right">{{ item.goodsSalePrice }}</td>
+                  <td class="w_12-5p text-right">{{ numberWithCommas(item.goodsCost) }}</td>
+                  <td class="w_12-5p text-right">{{ numberWithCommas(item.goodsSalePrice) }}</td>
                 </tr>
               </tbody>
               <tbody v-else>
@@ -65,27 +65,25 @@
 import Logo from '~/components/Logo.vue'
 import ManageGoodsModal from '@/components/Modal/ManageGoodsModal'
 import { mapState, mapMutations } from 'vuex'
+import global from '@/mixins/global'
 
 export default {
   components: {
     ManageGoodsModal
   },
+  mixins: [global],
   data () {
     return {
-      ip: null,
       isDialogGoods: false,
       barcode: "",
       goodsName: "",
       unitName: "",
       goodsCost: 0,
       goodsSalePrice: 0
-      //ListGoods: [],
     }
   },
   computed: {
-    ...mapState({
-      ListGoods: state => state.ListGoods
-    })
+
   },
   created() {
     this.fetchListGoods();
@@ -101,7 +99,9 @@ export default {
       console.log(this.$store.state.ListGoods)
     },
     AddGoods() {
-      this.isDialogGoods = true;
+      this.$store.dispatch("addGoods").then(() => {
+        this.isDialogGoods = true      
+      })
     },
     closeModal() {
       this.isDialogGoods = false;
@@ -111,7 +111,6 @@ export default {
         this.$store.dispatch("editGoods", goodsID).then(() => {
           this.isDialogGoods = true      
         })
-        //this.$store.commit('setItemFocus', GoodsID)
       }
     }
   }

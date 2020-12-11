@@ -45,7 +45,7 @@
               <v-card-text>
                 <v-col class="content">
                   <v-row align="center" justify="end" style="padding: 0px 10px 10px 10px;">
-                    <v-btn text normal color="primary" outlined @click="isDialogUnit = true"><span style="margin-right:10px;">เพิ่มหน่วยนับ</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
+                    <v-btn text normal color="primary" outlined @click="AddUnit"><span style="margin-right:10px;">เพิ่มหน่วยนับ</span><font-awesome-icon :icon="['fas', 'plus']" /></v-btn>
                   </v-row>
                   <v-simple-table fixed-header height="300px" class="testing-table">
                     <template v-slot:default>
@@ -59,15 +59,15 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="unit in ObjGoodsData.listUnit" :key="unit.uid" :class="[transacGridUnitControl.focusUID == unit.uid ? 'focusRow' : '']">
+                        <tr v-for="unit in ObjGoodsData.listUnit" :key="unit.uid" :class="[unit.isFocusRow ? 'focusRow' : '']">
                         <!-- <tr v-for="item in ObjGoodsData.ListUnit" :key="item.uid"> -->
-                          <td v-if="transacGridUnitControl.focusUID != unit.uid">
-                            <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditUnit(unit.uid)" style="margin-right:10px;"/>
-                            <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="DeleteptUnit()"/>
-                          </td>
-                          <td v-else-if="transacGridUnitControl.focusUID == unit.uid">
+                          <td v-if="unit.isFocusRow">
                             <font-awesome-icon :icon="['fas', 'check']" class="pointer c-blue" @click="AccpetUnit()" style="margin-right:10px;"/>
                             <font-awesome-icon :icon="['fas', 'times']" class="pointer c-red" @click="NotAcceptUnit()"/>
+                          </td>
+                          <td v-else>
+                            <font-awesome-icon :icon="['fas', 'pen']" class="pointer c-blue" @click="EditUnit(unit.uid)" style="margin-right:10px;"/>
+                            <font-awesome-icon :icon="['fas', 'trash-alt']" class="pointer c-red" @click="DeleteptUnit()"/>
                           </td>
                           <td><input type="text" class="transac-input" v-model="unit.barcode"></td>
                           <td><input type="text" class="transac-input" v-model="unit.unitNo"></td>
@@ -119,28 +119,29 @@
                   <v-subheader class="require">*</v-subheader>
                 </v-col>
                 <v-col cols="11">
-                  <v-text-field v-model="ObjUnitData.Barcode" :rules="[x => !!x || 'กรุณากรอกหมายเลข Barcode']" label="Barcode" outlined dense placeholder="หมายเลข Barcode" autofocus></v-text-field>
+                  <v-text-field v-model="ObjUnitData.barcode" :rules="[x => !!x || 'กรุณากรอกหมายเลข Barcode']" label="Barcode" outlined dense placeholder="หมายเลข Barcode" autofocus></v-text-field>
                 </v-col>
                 <v-col cols="1">
                   <v-subheader class="require">*</v-subheader>
                 </v-col>
                 <v-col cols="11">
-                  <v-select v-model="ObjUnitData.Unit" :items="ListSelectUnit" item-text="UnitName" :rules="[x => !!x || 'กรุณาเลือกหน่วยนับ']" label="หน่วยนับ" dense outlined return-object></v-select>
+                  <v-autocomplete v-model="selectedUnit" :items="$store.getters.unitObj" item-value="unitID" item-text="unitName" :rules="[x => !!x || 'กรุณาเลือกหน่วยนับ']" label="หน่วยนับ" auto-select-first dense outlined return-object></v-autocomplete>                                    
+                  <!-- return-object -->
                 </v-col>
                 <v-col cols="1">
                   <v-subheader class="require"></v-subheader>
                 </v-col>
                 <v-col cols="11">
-                  <v-text-field v-model="ObjUnitData.GoodsCost" label="GoodsCost" outlined dense placeholder="ราคาต้นทุน"></v-text-field>
+                  <v-text-field v-model="ObjUnitData.goodsCost" label="GoodsCost" outlined dense placeholder="ราคาต้นทุน"></v-text-field>
                 </v-col>
                 <v-col cols="1">
                   <v-subheader class="require">*</v-subheader>
                 </v-col>
                 <v-col cols="11">
-                  <v-text-field v-model="ObjUnitData.GoodsPrice" :rules="[x => !!x || 'กรุณากรอกราคาขาย']" label="GoodsPrice" outlined dense placeholder="ราคาขาย"></v-text-field>
+                  <v-text-field v-model="ObjUnitData.goodsPrice" :rules="[x => !!x || 'กรุณากรอกราคาขาย']" label="GoodsPrice" outlined dense placeholder="ราคาขาย"></v-text-field>
                 </v-col>
                 <v-col cols="1"><v-subheader></v-subheader></v-col>
-                <v-col cols="11"><v-subheader class="pl_0"><v-checkbox v-model="ObjUnitData.IsBaseUnit"></v-checkbox> หน่วยนับหลัก</v-subheader></v-col>
+                <v-col cols="11"><v-subheader class="pl_0"><v-checkbox v-model="ObjUnitData.isBaseUnit"></v-checkbox> หน่วยนับหลัก</v-subheader></v-col>
               </v-row>
             </v-form>
           </v-col>
@@ -157,67 +158,34 @@
 </template>
 
 <script>
-  import { mapState, mapMutations } from 'vuex'
+  import global from '@/mixins/global'
+  import { state } from '~/store'
   export default {
+    mixins: [global],
     props: ['isDialogGoods'],
     data: () => ({
       dialog: false,
       isDialogUnit: false,
       validObjGoods: true,
       validObjUnit: true,
-      BarcodeRules: [
-        v => !!v || 'กรุณากรอกหมายเลข Barcode',
-        //v => (v && v.length <= 10) || 'Name must be less than 10 characters',
-      ],
-      GoodsPriceRules: [
-        x => !!x || 'กรุณากรอกราคาขาย'
-      ],
-      ObjGoodsData: { ListUnit: [] },
-      //ObjGoodsData: { ListUnit: [] },ObjUnit
+      ObjGoodsData: { listUnit: [] },
+      searchInput: "",
       ObjUnitData: {},
-      ListSelectUnit: [
-        { UnitID: 'FL', UnitNo: 'UN-01', UnitName: 'ชิ้น' },
-        { UnitID: 'GA', UnitNo: 'UN-02', UnitName: 'กล่อง' },
-        { UnitID: 'NE', UnitNo: 'UN-03', UnitName: 'แพค' },
-      ],
-      TempUnit: [
-        { uid: 1, Barcode: '123456', Unit: { UnitNo: 'UN-01', UnitName: 'ชิ้น' } },
-        { uid: 2, Barcode: '78910', Unit: { UnitNo: 'UN-02', UnitName: 'กล่อง' } },
-        { uid: 3, Barcode: '14442323', Unit: { UnitNo: 'UN-03', UnitName: 'แพค' } },
-        { uid: 4, Barcode: '12415513', Unit: { UnitNo: 'UN-01', UnitName: 'ชิ้น' } },
-        { uid: 5, Barcode: '36436346', Unit: { UnitNo: 'UN-01', UnitName: 'ชิ้น' } }
-      ],
+      selectedUnit: null,
       transacGridUnitControl : { focusUID : null }
     }),
     watch: {
-      // whenever question changes, this function will run
-      // ObjGoodsData: function (newObjGoodsData, oldObjGoodsData) {
-      //   console.log(this.newObjGoodsData)
-      // },
       isDialogGoods: function (val) {
-        var GoodsNo = "ITM-001"
         var goodsObj = this.$store.getters.goodsObj  
         if (!!goodsObj) {
-            this.ObjGoodsData = goodsObj.goods
-            console.log(goodsObj)
-        } else {
-          this.ObjGoodsData.goodsNo = GoodsNo
+            this.ObjGoodsData.goodsNo = goodsObj.goods.goodsNo
         }
       }
     },
     mounted(){
-      // if (!!this) {
-      //   $(this.$refs.modal).on('hidden.bs.modal', function () {
-      //     //this.image = ''
-      //     //this.$refs.form.$reset()
-      //   })
-      // }
-      
+
     },
     methods: {
-      ...mapMutations({
-        addGoods: "addGoods"
-      }),
       AddGoods() {
         let config = {
           headers : { "Content-Type": "application/x-www-form-urlendcorded" }
@@ -235,10 +203,45 @@
         //this.addGoods(this.ObjGoodsData)
         //this.closeModalGoods()
       },
+      AddUnit: function () {
+        var onFoucus = this.ObjGoodsData.listUnit.filter(x => {
+          return x.isFocusRow
+        }).length;
+
+        if (onFoucus == 0) {
+          const uid = Math.random().toString(16).slice(2)
+          this.ObjGoodsData.listUnit.push({
+            uid: Math.random().toString(16).slice(2),
+            isFocusRow: true
+          })
+
+          console.log(this.ObjGoodsData)
+        }
+        else
+        {
+          this.callAlert(true)
+        }
+
+
+
+        
+        // this.transacGridUnitControl.focusUID = uid
+        //this.ObjUnitData['uid'] = Math.random().toString(16).slice(2)
+      },
       InsertUnit: function () {
         if (this.$refs.form.validate()) {
           this.ObjUnitData['uid'] = Math.random().toString(16).slice(2)
-          this.ObjGoodsData.ListUnit.push(this.ObjUnitData)
+          if (!!this.ObjGoodsData.listUnit) {
+            this.ObjGoodsData.listUnit.push(this.ObjUnitData)
+          }
+          else
+          {
+            this.ObjGoodsData.listUnit = [this.ObjUnitData]
+          }
+
+          console.log('selectedUnit : ' + this.selectedUnit)
+                    console.log(this.ObjGoodsData)
+          
           this.ClearUnitModal()
         }
       },
