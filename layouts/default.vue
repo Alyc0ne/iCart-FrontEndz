@@ -20,7 +20,7 @@
         <v-spacer />
       </v-app-bar>
 
-      <v-main>
+      <v-main style="height:100vh !important;">
         <v-container class="fill-height" fluid>
           <nuxt />
         </v-container>

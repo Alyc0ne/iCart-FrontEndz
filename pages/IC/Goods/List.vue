@@ -1,7 +1,7 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="12" md="12">
-      <v-card>
+  <v-row justify="center" align="center" class="fill-height">
+    <v-col cols="12" sm="12" md="12" class="fill-height">
+      <v-card height="100%">
         <v-card-actions>
           <v-list-item class="grow">
             <v-list-item-avatar color="grey" style="width: 60px !important; height:60px !important;">
